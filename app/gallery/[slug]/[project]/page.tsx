@@ -31,12 +31,18 @@ export default async function ProjectPage({
       _id,
       title,
       slug,
-      images[]{
-        asset->{
-          _id,
-          url
-        }
+     images[]{
+  asset->{
+    _id,
+    url,
+    metadata {
+      dimensions {
+        width,
+        height
       }
+    }
+  }
+}
     }
   `,
         { slug }
@@ -139,7 +145,7 @@ export default async function ProjectPage({
                         );
                     })}
                 </div>
-
+                
                 <GalleryGrid
                     images={images}
                     layout="grid"

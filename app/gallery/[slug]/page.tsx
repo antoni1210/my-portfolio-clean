@@ -46,11 +46,17 @@ export default async function GalleryPage({
     *[_type == "gallery" && slug.current == $slug][0]{
       title,
       images[]{
-        asset->{
-          _id,
-          url
-        }
+  asset->{
+    _id,
+    url,
+    metadata {
+      dimensions {
+        width,
+        height
       }
+    }
+  }
+}
     }
   `,
     { slug }
@@ -65,12 +71,18 @@ export default async function GalleryPage({
     _id,
     title,
     slug,
-    images[]{
-      asset->{
-        _id,
-        url
+images[]{
+  asset->{
+    _id,
+    url,
+    metadata {
+      dimensions {
+        width,
+        height
       }
     }
+  }
+}
   }
 `,
     { slug }

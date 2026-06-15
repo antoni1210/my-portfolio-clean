@@ -12,6 +12,7 @@ export default function GalleryGrid({
 }) {
     const [selectedIndex, setSelectedIndex] =
         useState<number | null>(null);
+
     useEffect(() => {
         const handleKeyDown = (
             e: KeyboardEvent
@@ -25,7 +26,7 @@ export default function GalleryGrid({
             if (e.key === "ArrowRight") {
                 setSelectedIndex(
                     (selectedIndex + 1) %
-                    images.length
+                        images.length
                 );
             }
 
@@ -34,7 +35,7 @@ export default function GalleryGrid({
                     (selectedIndex -
                         1 +
                         images.length) %
-                    images.length
+                        images.length
                 );
             }
         };
@@ -55,7 +56,7 @@ export default function GalleryGrid({
         <>
             {layout === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1600px] mx-auto">
-                    {images.map((img) => (
+                    {images.map((img, index) => (
                         <div
                             key={img.asset._id}
                             className="overflow-visible"
@@ -64,7 +65,8 @@ export default function GalleryGrid({
                                 src={img.asset.url}
                                 className="w-full cursor-pointer"
                                 style={{
-                                    transition: "transform 0.4s ease",
+                                    transition:
+                                        "transform 0.4s ease",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform =
@@ -76,11 +78,7 @@ export default function GalleryGrid({
                                 }}
                                 onClick={() =>
                                     setSelectedIndex(
-                                        images.findIndex(
-                                            (i) =>
-                                                i.asset._id ===
-                                                img.asset._id
-                                        )
+                                        index
                                     )
                                 }
                             />
@@ -89,13 +87,14 @@ export default function GalleryGrid({
                 </div>
             ) : (
                 <div className="max-w-full">
-                    {images.map((img) => (
+                    {images.map((img, index) => (
                         <img
                             key={img.asset._id}
                             src={img.asset.url}
                             className="w-full cursor-pointer"
                             style={{
-                                transition: "transform 0.3s ease",
+                                transition:
+                                    "transform 0.3s ease",
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform =
@@ -107,11 +106,7 @@ export default function GalleryGrid({
                             }}
                             onClick={() =>
                                 setSelectedIndex(
-                                    images.findIndex(
-                                        (i) =>
-                                            i.asset._id ===
-                                            img.asset._id
-                                    )
+                                    index
                                 )
                             }
                         />
@@ -142,22 +137,25 @@ export default function GalleryGrid({
                             info
                         ) => {
                             if (
-                                info.offset.x < -100
+                                info.offset.x <
+                                -100
                             ) {
                                 setSelectedIndex(
-                                    (selectedIndex + 1) %
-                                    images.length
+                                    (selectedIndex +
+                                        1) %
+                                        images.length
                                 );
                             }
 
                             if (
-                                info.offset.x > 100
+                                info.offset.x >
+                                100
                             ) {
                                 setSelectedIndex(
                                     (selectedIndex -
                                         1 +
                                         images.length) %
-                                    images.length
+                                        images.length
                                 );
                             }
                         }}
