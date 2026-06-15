@@ -1,8 +1,10 @@
 export const dynamic = "force-dynamic";
 
+
 import Link from "next/link";
 import { client } from "@/lib/sanity";
 import GalleryGrid from "@/components/GalleryGrid";
+import { redirect } from "next/navigation";
 
 export default async function GalleryPage({
   params,
@@ -10,6 +12,23 @@ export default async function GalleryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  if (slug === "65-24") {
+    const firstProject = await client.fetch(`
+    *[
+      _type == "project" &&
+      parentGallery->slug.current == "65-24"
+    ] | order(order asc)[0]{
+      slug
+    }
+  `);
+
+    if (firstProject?.slug?.current) {
+      redirect(
+        `/gallery/65-24/${firstProject.slug.current}`
+      );
+    }
+  }
 
 
   // Fetch all galleries for nav
@@ -37,7 +56,30 @@ export default async function GalleryPage({
     { slug }
   );
 
-  const images = currentGallery?.images || [];
+  const projects = await client.fetch(
+    `
+  *[
+    _type == "project" &&
+    parentGallery->slug.current == $slug
+  ] | order(order asc) {
+    _id,
+    title,
+    slug,
+    images[]{
+      asset->{
+        _id,
+        url
+      }
+    }
+  }
+`,
+    { slug }
+  );
+
+  const images =
+    slug === "65-24" && projects.length > 0
+      ? projects[0].images || []
+      : currentGallery?.images || [];
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-10">
@@ -78,25 +120,41 @@ export default async function GalleryPage({
                    ${active ? "text-[#FAB617] [text-shadow:0_0_8px_rgba(250,182,23,0.5),0_0_16px_rgba(250,182,23,0.3)]" : ""}
                   `}
                 >
-                  <div className="flex items-end gap-4">
-                    <div className="text-[11px] tracking-[0.2em]">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-
-                    <h2
-                      className="text-[42px] leading-none uppercase font-semibold"
-                      style={{
-                        letterSpacing: "0.15em",
-                      }}
-                    >
-                      {gallery.title}
-                    </h2>
-                  </div>
+                  <h2
+                    className="text-[42px] leading-none uppercase font-semibold"
+                    style={{
+                      letterSpacing: "0.15em",
+                    }}
+                  >
+                    {gallery.title}
+                  </h2>
                 </Link>
               );
             }
           )}
         </div>
+        {slug === "65-24" && projects.length > 0 && (
+          <div className="flex flex-wrap gap-x-10 gap-y-4 mb-16">
+            {projects.map((project: any) => (
+              <div
+                key={project._id}
+                className="
+          text-[#FAB617]/70
+          uppercase
+          text-[18px]
+          font-semibold
+          cursor-pointer
+        "
+                style={{
+                  letterSpacing: "0.15em",
+                }}
+              >
+                {project.title}
+              </div>
+            ))}
+          </div>
+        )}
+
         {slug === "65-24" ? (
           <GalleryGrid
             images={images}

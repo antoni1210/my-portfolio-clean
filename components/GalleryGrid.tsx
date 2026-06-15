@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function GalleryGrid({
     images,
@@ -9,8 +10,46 @@ export default function GalleryGrid({
     images: any[];
     layout: "grid" | "column";
 }) {
-    const [selectedImage, setSelectedImage] =
-        useState<string | null>(null);
+    const [selectedIndex, setSelectedIndex] =
+        useState<number | null>(null);
+    useEffect(() => {
+        const handleKeyDown = (
+            e: KeyboardEvent
+        ) => {
+            if (selectedIndex === null) return;
+
+            if (e.key === "Escape") {
+                setSelectedIndex(null);
+            }
+
+            if (e.key === "ArrowRight") {
+                setSelectedIndex(
+                    (selectedIndex + 1) %
+                    images.length
+                );
+            }
+
+            if (e.key === "ArrowLeft") {
+                setSelectedIndex(
+                    (selectedIndex -
+                        1 +
+                        images.length) %
+                    images.length
+                );
+            }
+        };
+
+        window.addEventListener(
+            "keydown",
+            handleKeyDown
+        );
+
+        return () =>
+            window.removeEventListener(
+                "keydown",
+                handleKeyDown
+            );
+    }, [selectedIndex, images]);
 
     return (
         <>
@@ -36,7 +75,13 @@ export default function GalleryGrid({
                                         "scale(1)";
                                 }}
                                 onClick={() =>
-                                    setSelectedImage(img.asset.url)
+                                    setSelectedIndex(
+                                        images.findIndex(
+                                            (i) =>
+                                                i.asset._id ===
+                                                img.asset._id
+                                        )
+                                    )
                                 }
                             />
                         </div>
@@ -61,21 +106,64 @@ export default function GalleryGrid({
                                     "scale(1)";
                             }}
                             onClick={() =>
-                                setSelectedImage(img.asset.url)
+                                setSelectedIndex(
+                                    images.findIndex(
+                                        (i) =>
+                                            i.asset._id ===
+                                            img.asset._id
+                                    )
+                                )
                             }
                         />
                     ))}
                 </div>
             )}
 
-            {selectedImage && (
+            {selectedIndex !== null && (
                 <div
                     className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-8 cursor-pointer"
-                    onClick={() => setSelectedImage(null)}
+                    onClick={() =>
+                        setSelectedIndex(null)
+                    }
                 >
-                    <img
-                        src={selectedImage}
+                    <motion.img
+                        src={
+                            images[selectedIndex]
+                                .asset.url
+                        }
                         className="max-w-[95vw] max-h-[95vh] object-contain"
+                        drag="x"
+                        dragConstraints={{
+                            left: 0,
+                            right: 0,
+                        }}
+                        onDragEnd={(
+                            _,
+                            info
+                        ) => {
+                            if (
+                                info.offset.x < -100
+                            ) {
+                                setSelectedIndex(
+                                    (selectedIndex + 1) %
+                                    images.length
+                                );
+                            }
+
+                            if (
+                                info.offset.x > 100
+                            ) {
+                                setSelectedIndex(
+                                    (selectedIndex -
+                                        1 +
+                                        images.length) %
+                                    images.length
+                                );
+                            }
+                        }}
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
                     />
                 </div>
             )}
