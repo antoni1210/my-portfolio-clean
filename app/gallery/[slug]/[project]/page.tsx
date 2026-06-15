@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { client } from "@/lib/sanity";
 import GalleryGrid from "@/components/GalleryGrid";
+import FadeIn from "@/components/FadeIn";
 
 export default async function ProjectPage({
     params,
@@ -145,11 +146,13 @@ export default async function ProjectPage({
                         );
                     })}
                 </div>
-                
-                <GalleryGrid
-                    images={images}
-                    layout="grid"
-                />
+
+                <FadeIn animationKey={project}>
+                    <GalleryGrid
+                        images={images}
+                        layout="grid"
+                    />
+                </FadeIn>
             </div>
         </main>
     );

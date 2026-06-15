@@ -5,6 +5,8 @@ import Link from "next/link";
 import { client } from "@/lib/sanity";
 import GalleryGrid from "@/components/GalleryGrid";
 import { redirect } from "next/navigation";
+import { motion } from "framer-motion";
+import FadeIn from "@/components/FadeIn";
 
 export default async function GalleryPage({
   params,
@@ -168,10 +170,12 @@ images[]{
         )}
 
         {slug === "65-24" ? (
-          <GalleryGrid
-            images={images}
-            layout="grid"
-          />
+          <FadeIn animationKey={slug}>
+            <GalleryGrid
+              images={images}
+              layout="column"
+            />
+          </FadeIn>
         ) : (
           <GalleryGrid
             images={images}

@@ -26,7 +26,7 @@ export default function GalleryGrid({
             if (e.key === "ArrowRight") {
                 setSelectedIndex(
                     (selectedIndex + 1) %
-                        images.length
+                    images.length
                 );
             }
 
@@ -35,7 +35,7 @@ export default function GalleryGrid({
                     (selectedIndex -
                         1 +
                         images.length) %
-                        images.length
+                    images.length
                 );
             }
         };
@@ -51,7 +51,25 @@ export default function GalleryGrid({
                 handleKeyDown
             );
     }, [selectedIndex, images]);
+    useEffect(() => {
+        if (selectedIndex === null) return;
 
+        const nextImage = new window.Image();
+        nextImage.src =
+            images[
+                (selectedIndex + 1) %
+                images.length
+            ].asset.url;
+
+        const prevImage = new window.Image();
+        prevImage.src =
+            images[
+                (selectedIndex -
+                    1 +
+                    images.length) %
+                images.length
+            ].asset.url;
+    }, [selectedIndex, images]);
     return (
         <>
             {layout === "grid" ? (
@@ -143,7 +161,7 @@ export default function GalleryGrid({
                                 setSelectedIndex(
                                     (selectedIndex +
                                         1) %
-                                        images.length
+                                    images.length
                                 );
                             }
 
@@ -155,7 +173,7 @@ export default function GalleryGrid({
                                     (selectedIndex -
                                         1 +
                                         images.length) %
-                                        images.length
+                                    images.length
                                 );
                             }
                         }}
